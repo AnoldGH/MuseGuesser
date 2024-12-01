@@ -5,10 +5,25 @@ const QuestionComponent = ({ idx, questionSet, onSubmit }) => {
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(null);
 
+  const [audio, setAudio] = useState(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+
   useEffect(() => {
     // Record the start time when the component is mounted
     setStartTime(Date.now());
+
+    // playAudio() // play the audio
   }, [idx, questionSet]);
+
+  const playAudio = () => {
+    if (isPlaying) return
+
+    // Play the audio
+    const newAudio = new Audio(questionSet.url)  // play the track
+    newAudio.play()
+    setAudio(newAudio)
+    setIsPlaying(true)
+  }
 
   const handleOptionClick = (index) => {
     console.log("index", index)
@@ -24,6 +39,13 @@ const QuestionComponent = ({ idx, questionSet, onSubmit }) => {
       alert("Please select an option before submitting.");
       return;
     }
+
+    // Stop the audio
+    if (audio) {
+      audio.pause();
+      setAudio(null);
+    }
+    setIsPlaying(false);
 
     // Call the parent callback with the selected option and time taken
     await onSubmit(idx, selectedOption, elapsedTime)
